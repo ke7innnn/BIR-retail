@@ -34,8 +34,10 @@ jobs:
             docker build -t bir-retail-backend .
 
             # Run container with host port 8003 mapping to container port 8000
+            # Also expose host-gateway to container via host.docker.internal
             docker run -d \
               --name bir-retail-backend \
+              --add-host=host.docker.internal:host-gateway \
               -p 8003:8000 \
               --env-file .env \
               --restart always \
