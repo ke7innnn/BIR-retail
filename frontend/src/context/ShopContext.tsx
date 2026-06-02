@@ -19,9 +19,10 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const fetchData = async () => {
       try {
         setLoading(true);
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
         const [prodRes, catRes] = await Promise.all([
-          fetch("http://localhost:8000/api/products"),
-          fetch("http://localhost:8000/api/categories")
+          fetch(`${baseUrl}/api/products`),
+          fetch(`${baseUrl}/api/categories`)
         ]);
         
         if (prodRes.ok) {

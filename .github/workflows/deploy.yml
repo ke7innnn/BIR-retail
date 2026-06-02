@@ -33,12 +33,12 @@ jobs:
             # Build backend docker image
             docker build -t bir-retail-backend .
 
-            # Run container with host port 8003 mapping to container port 8000
-            # Also expose host-gateway to container via host.docker.internal
+            # Run container with Host Networking (shares VPS network namespace directly)
             docker run -d \
               --name bir-retail-backend \
-              --add-host=host.docker.internal:host-gateway \
-              -p 8003:8000 \
-              --env-file .env \
+              --network host \
               --restart always \
-              bir-retail-backend
+              --env-file .env \
+              bir-retail-backend \
+              uvicorn app.main:app --host 0.0.0.0 --port 8003
+

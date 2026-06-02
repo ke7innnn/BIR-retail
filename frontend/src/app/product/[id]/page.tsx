@@ -181,7 +181,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:8000/api/products/${params.id}`);
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
+        const res = await fetch(`${baseUrl}/api/products/${params.id}`);
         if (res.ok) {
           const data = await res.json();
           setProduct(data);

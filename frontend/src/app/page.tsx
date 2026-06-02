@@ -32,7 +32,8 @@ export default function Home() {
   useEffect(() => {
     const fetchHeroSlides = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/promotions/hero");
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
+        const res = await fetch(`${baseUrl}/api/promotions/hero`);
         if (res.ok) {
           const data = await res.json();
           setHeroSlides(data);

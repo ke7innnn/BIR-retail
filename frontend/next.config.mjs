@@ -20,6 +20,11 @@ const nextConfig = {
         port: '9000',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'bir.media.nexonalabs.com',
+        pathname: '/**',
+      },
     ],
   },
 };
