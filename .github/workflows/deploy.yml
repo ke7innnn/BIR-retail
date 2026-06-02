@@ -1,0 +1,42 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/services/BIR-retail
+            
+            git pull origin main
+
+            cd backend
+
+            # Stop and remove existing container if running
+            docker stop bir-retail-backend || true
+            docker rm bir-retail-backend || true
+
+            # Build backend docker image
+            docker build -t bir-retail-backend .
+
+            # Run container with host port 8003 mapping to container port 8000
+            docker run -d \
+              --name bir-retail-backend \
+              -p 8003:8000 \
+              --env-file .env \
+              --restart always \
+              bir-retail-backend
