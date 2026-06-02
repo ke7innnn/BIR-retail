@@ -39,6 +39,7 @@ export interface Category {
   label: string;
   description: string;
   iconName: string;
+  image?: string;
 }
 
 export interface ShopContextType {

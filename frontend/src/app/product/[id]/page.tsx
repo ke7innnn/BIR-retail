@@ -24,6 +24,7 @@ import {
   Activity,
   Heart as HeartIcon
 } from "lucide-react";
+import { Product, Review } from "../../../types";
 
 // Dynamic verified reviews generator based on product category & name
 const getMockReviews = (category: string, productName: string) => {
@@ -163,10 +164,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const router = useRouter();
   const { products, addToCart, toggleWishlist, isInWishlist } = useShop();
   
-  // Resolve product
-  const product = products.find((p) => p.id === params.id);
-
   // States
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -176,6 +176,28 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   // Zoom magnifier states
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
 
+  // Fetch product from backend API on mount or ID change
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`http://localhost:8000/api/products/${params.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProduct(data);
+        } else {
+          setProduct(null);
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [params.id]);
+
   // Set default variant when product is loaded
   useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
@@ -184,6 +206,17 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       setSelectedVariant("Standard");
     }
   }, [product]);
+
+  if (loading) {
+    return (
+      <div className={styles.container} style={{ textAlign: "center", padding: "12rem 2rem" }}>
+        <h2 style={{ fontSize: "1.8rem", color: "var(--color-accent-gold)", marginBottom: "1rem", fontWeight: "600" }}>
+          Loading Gourmet Selection
+        </h2>
+        <p style={{ color: "var(--color-text-muted)" }}>Sourcing premium raw ingredients...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -236,7 +269,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     : 0;
 
   // Retrieve dynamic content
-  const reviewsList = getMockReviews(product.category, product.name);
+  const reviewsList = product.reviews || [];
   const highlights = getNutritionHighlights(product.category);
 
   return (
@@ -257,7 +290,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             {/* Thumbnails */}
             {product.images && product.images.length > 1 && (
               <div className={styles.thumbnails}>
-                {product.images.map((img, idx) => (
+                {product.images.map((img: string, idx: number) => (
                   <button
                     key={idx}
                     className={`${styles.thumbBtn} ${idx === activeImageIdx ? styles.thumbBtnActive : ""}`}
@@ -379,7 +412,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 {product.category === "gift-hampers" ? "Select Presentation Packing" : "Select Net Weight Pack"}
               </span>
               <div className={styles.variantsGrid}>
-                {product.variants.map((v) => (
+                {product.variants.map((v: string) => (
                   <button
                     key={v}
                     className={`${styles.variantBtn} ${selectedVariant === v ? styles.variantBtnActive : ""}`}
@@ -545,7 +578,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   {Object.entries(product.specs).map(([key, val]) => (
                     <tr key={key}>
                       <td>{key}</td>
-                      <td>{val}</td>
+                      <td>{val as string}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -555,7 +588,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
           {activeTab === "reviews" && (
             <div className={`${styles.reviewsList} animate-fade-in`}>
-              {reviewsList.map((rev) => (
+              {reviewsList.map((rev: Review) => (
                 <div key={rev.id} className={styles.reviewItem}>
                   <div className={styles.reviewMeta}>
                     <span className={styles.reviewUser}>{rev.userName} <span style={{ color: "#10b981", fontSize: "0.7rem", marginLeft: "0.5rem", fontWeight: "700" }}>✓ Verified Buyer</span></span>

@@ -22,78 +22,36 @@ import {
 } from "lucide-react";
 import { Product } from "../types";
 
-const HERO_SLIDES = [
-  {
-    id: "slide-1",
-    subtitle: "India's Fastest Growing Dryfruits Brand",
-    title: "Premium California Almonds",
-    desc: "Sourced from pristine orchards, our classic almonds are packed with heart-healthy oils, vitamin E, and a supreme crisp crunch. Free airtight container included with our 1 KG saver pack!",
-    image: "/images/products/california-almonds-1-kg.jpg",
-    ctaLink: "/product/california-almonds-1-kg"
-  },
-  {
-    id: "slide-2",
-    subtitle: "Exquisite Festive Gifting",
-    title: "Mandala Premium Gift Trays",
-    desc: "Give the gift of healthy, gourmet snacking. A beautiful premium pack containing five of our finest dry fruit varieties cocooned in a spectacular gold-patterned chakra sleeve.",
-    image: "/images/products/family-pack-of-5-premium-dry-fruits-i-red-750g-with-golden-pattern-sleeves.jpg",
-    ctaLink: "/product/family-pack-of-5-premium-dry-fruits-i-red-750g-with-golden-pattern-sleeves"
-  },
-  {
-    id: "slide-3",
-    subtitle: "Gourmet Savory Bites",
-    title: "Crazy Cashews Pepper & Pink Salt",
-    desc: "Jumbo slow-roasted cashews gently seasoned with pure Himalayan pink salt and cracked black pepper. The perfect umami-rich companion for healthy, daily crunching.",
-    image: "/images/products/crazy-cashew-black-pepper-salt-flavour-100g.jpg",
-    ctaLink: "/product/crazy-cashew-black-pepper-salt-flavour-100g"
-  }
-];
-
-const CATEGORIES_CIRCULAR = [
-  {
-    id: "cat-1",
-    label: "Classic Dry Fruits",
-    categoryName: "classic",
-    image: "/images/products/california-almonds-1-kg.jpg"
-  },
-  {
-    id: "cat-2",
-    label: "Crazy Bites",
-    categoryName: "crazy-bites",
-    image: "/images/products/crazy-cashew-black-pepper-salt-flavour-100g.jpg"
-  },
-  {
-    id: "cat-3",
-    label: "Makhana Masti",
-    categoryName: "makhana",
-    image: "/images/products/makhana-masti-peri-peri.jpg"
-  },
-  {
-    id: "cat-4",
-    label: "Exotic & Honey",
-    categoryName: "exotic-fruits",
-    image: "/images/products/silver-leaf-honey-200g.jpg"
-  },
-  {
-    id: "cat-5",
-    label: "Gift Packs & Hampers",
-    categoryName: "gift-hampers",
-    image: "/images/products/family-pack-of-5-premium-dry-fruits-i-red-750g-with-golden-pattern-sleeves.jpg"
-  }
-];
-
 export default function Home() {
   const { products, categories, activeCategory, setActiveCategory, addToCart, toggleWishlist, isInWishlist } = useShop();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
+  const [heroSlides, setHeroSlides] = useState<any[]>([]);
+
+  // Fetch Hero Slides from API on mount
+  useEffect(() => {
+    const fetchHeroSlides = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/api/promotions/hero");
+        if (res.ok) {
+          const data = await res.json();
+          setHeroSlides(data);
+        }
+      } catch (error) {
+        console.error("Error fetching hero slides:", error);
+      }
+    };
+    fetchHeroSlides();
+  }, []);
 
   // Auto rotate hero slides
   useEffect(() => {
+    if (heroSlides.length === 0) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [heroSlides.length]);
 
   // Filter products based on active category
   const filteredProducts = activeCategory === "all" 
@@ -116,9 +74,9 @@ export default function Home() {
       {/* --- HERO BANNER --- */}
       <section className={styles.hero}>
         <div className={styles.heroBackground}>
-          {HERO_SLIDES.map((slide, idx) => (
+          {heroSlides.map((slide, idx) => (
             <Image 
-              key={slide.id}
+              key={idx}
               src={slide.image} 
               alt={slide.title}
               fill
@@ -129,28 +87,32 @@ export default function Home() {
           <div className={styles.heroOverlay} />
         </div>
 
-        <div className={styles.heroContent}>
-          <div className={styles.heroEyebrow}>
-            <Sparkles size={12} />
-            India&apos;s Fastest Growing Dryfruits Brand
+        {heroSlides.length > 0 && (
+          <div className={styles.heroContent}>
+            <div className={styles.heroEyebrow}>
+              <Sparkles size={12} />
+              {heroSlides[currentSlide].subtitle}
+            </div>
+            <h1 className={styles.heroTitle}>{heroSlides[currentSlide].title}</h1>
+            <p className={styles.heroDesc}>{heroSlides[currentSlide].description}</p>
+            <Link href={heroSlides[currentSlide].ctaLink} className={styles.heroCta}>
+              Explore Now <ArrowRight size={17} />
+            </Link>
           </div>
-          <h1 className={styles.heroTitle}>{HERO_SLIDES[currentSlide].title}</h1>
-          <p className={styles.heroDesc}>{HERO_SLIDES[currentSlide].desc}</p>
-          <Link href={HERO_SLIDES[currentSlide].ctaLink} className={styles.heroCta}>
-            Explore Now <ArrowRight size={17} />
-          </Link>
-        </div>
+        )}
 
-        <div className={styles.heroIndicators}>
-          {HERO_SLIDES.map((_, idx) => (
-            <button 
-              key={idx}
-              className={`${styles.indicator} ${idx === currentSlide ? styles.indicatorActive : ""}`}
-              onClick={() => setCurrentSlide(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
-        </div>
+        {heroSlides.length > 1 && (
+          <div className={styles.heroIndicators}>
+            {heroSlides.map((_, idx) => (
+              <button 
+                key={idx}
+                className={`${styles.indicator} ${idx === currentSlide ? styles.indicatorActive : ""}`}
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        )}
 
         <div className={styles.heroScrollHint}>
           <div className={styles.heroScrollLine} />
@@ -190,26 +152,26 @@ export default function Home() {
           <h2 className={styles.circularTitle}>Premium Collections</h2>
         </div>
         <div className={styles.circularGrid}>
-          {CATEGORIES_CIRCULAR.map((item) => (
+          {categories.filter(cat => cat.id !== "all").map((cat) => (
             <button
-              key={item.id}
+              key={cat.id}
               className={styles.circularCard}
               onClick={() => {
-                setActiveCategory(item.categoryName);
+                setActiveCategory(cat.name);
                 const elem = document.getElementById("collections");
                 if (elem) elem.scrollIntoView({ behavior: "smooth" });
               }}
             >
               <div className={styles.circularImageContainer}>
                 <Image
-                  src={item.image}
-                  alt={item.label}
+                  src={cat.image || "/images/products/california-almonds-1-kg.jpg"}
+                  alt={cat.label}
                   fill
                   sizes="120px"
                   className={styles.circularImage}
                 />
               </div>
-              <span className={styles.circularLabel}>{item.label}</span>
+              <span className={styles.circularLabel}>{cat.label}</span>
             </button>
           ))}
         </div>

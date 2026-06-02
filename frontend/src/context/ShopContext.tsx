@@ -1,16 +1,62 @@
 "use client";
-
+ 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product, Category, CartItem, ShopContextType } from "../types";
-import { PRODUCTS, CATEGORIES } from "../data/products";
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
 export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [isHydrated, setIsHydrated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Load products and categories from backend API on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [prodRes, catRes] = await Promise.all([
+          fetch("http://localhost:8000/api/products"),
+          fetch("http://localhost:8000/api/categories")
+        ]);
+        
+        if (prodRes.ok) {
+          const prodData = await prodRes.json();
+          setProducts(prodData);
+        }
+        
+        if (catRes.ok) {
+          const catData = await catRes.json();
+          // Prepend a virtual "All Collections" category for UI filter tabs
+          const hasAll = catData.some((c: Category) => c.id === "all");
+          if (!hasAll) {
+            setCategories([
+              {
+                id: "all",
+                name: "all",
+                label: "All Collections",
+                description: "Curated collection of all premium dry fruits and snacks.",
+                iconName: "Grid"
+              },
+              ...catData
+            ]);
+          } else {
+            setCategories(catData);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching products/categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Load cart and wishlist from localStorage on mount (client-side only)
   useEffect(() => {
@@ -55,7 +101,6 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const selectedVariant = variant || (product.variants && product.variants.length > 0 ? product.variants[0] : "Standard");
     
     setCart((prevCart) => {
-      // Find if item already exists in cart with same product ID and variant
       const existingItemIndex = prevCart.findIndex(
         (item) => item.product.id === product.id && item.selectedVariant === selectedVariant
       );
@@ -63,7 +108,6 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (existingItemIndex > -1) {
         const newCart = [...prevCart];
         const newQty = newCart[existingItemIndex].quantity + quantity;
-        // Limit by available stock
         newCart[existingItemIndex].quantity = product.stockCount > 0 ? Math.min(newQty, product.stockCount) : newQty;
         return newCart;
       } else {
@@ -84,7 +128,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCart((prevCart) =>
       prevCart.map((item) => {
         if (item.product.id === productId && item.selectedVariant === variant) {
-          const product = PRODUCTS.find((p) => p.id === productId);
+          const product = products.find((p) => p.id === productId);
           const maxStock = product ? product.stockCount : 99;
           return {
             ...item,
@@ -125,8 +169,8 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <ShopContext.Provider
       value={{
-        products: PRODUCTS,
-        categories: CATEGORIES,
+        products,
+        categories,
         cart,
         wishlist,
         activeCategory,
