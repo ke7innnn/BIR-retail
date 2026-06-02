@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import styles from "./Footer.module.css";
-import { 
+import {
   Send,
   CheckCircle2
 } from "lucide-react";
@@ -103,9 +103,9 @@ export const Footer: React.FC = () => {
           </div>
         ) : (
           <form className={styles.newsletterForm} onSubmit={handleSubmit}>
-            <input 
-              type="email" 
-              placeholder="Enter your email address" 
+            <input
+              type="email"
+              placeholder="Enter your email address"
               className={styles.newsletterInput}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -168,7 +168,7 @@ export const Footer: React.FC = () => {
 
       {/* Footer Bottom Bar */}
       <div className={styles.baseBar}>
-        <p>© 2026 Birla Nuts. Handcrafted for Kevin Pimenta. Inspired by Ministry of Nuts India.</p>
+        <p>BiR Retail. Developed by Nexona Labs</p>
         <div className={styles.payments}>
           <span className={styles.paymentBadge}>Visa</span>
           <span className={styles.paymentBadge}>Mastercard</span>

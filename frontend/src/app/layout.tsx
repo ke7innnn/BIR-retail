@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ShopProvider } from "../context/ShopContext";
-import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
 
-const inter = Inter({ subsets: ["latin"] });
+const givonic = localFont({
+  src: "../../public/fonts/Givonic.otf",
+  variable: "--font-givonic",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Birla Nuts | India's Fastest Growing Premium Dry Fruits Brand",
@@ -19,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" style={{ scrollBehavior: "smooth" }}>
-      <body className={inter.className} style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <body className={`${givonic.variable} ${givonic.className}`} style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
         <ShopProvider>
           <Header />
           <div style={{ flex: 1, paddingTop: "0px" }}>

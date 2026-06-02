@@ -349,10 +349,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
           <div className={styles.priceSection}>
             <div className={styles.priceRow}>
-              <span className={styles.price}>${product.price.toFixed(2)}</span>
+              <span className={styles.price}>₹{product.price.toFixed(2)}</span>
               {product.originalPrice && (
                 <>
-                  <span className={styles.originalPrice}>${product.originalPrice.toFixed(2)}</span>
+                  <span className={styles.originalPrice}>₹{product.originalPrice.toFixed(2)}</span>
                   <span className={styles.discountBadge}>SAVE {discountPercent}%</span>
                 </>
               )}
@@ -642,7 +642,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                     <h3 className={styles.productName} style={{ fontSize: "1rem", height: "2.4rem" }}>{rel.name}</h3>
                   </div>
                   <div className={styles.priceRow} style={{ marginTop: "0.5rem" }}>
-                    <span className={styles.price} style={{ fontSize: "1.1rem" }}>${rel.price.toFixed(2)}</span>
+                    <span className={styles.price} style={{ fontSize: "1.1rem" }}>₹{rel.price.toFixed(2)}</span>
                   </div>
                 </div>
               </Link>

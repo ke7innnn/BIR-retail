@@ -4,17 +4,17 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useShop } from "../context/ShopContext";
+import { useShop } from "../../context/ShopContext";
 import styles from "./Header.module.css";
-import { 
-  ShoppingBag, 
-  Heart, 
-  Search, 
-  Menu, 
-  X, 
-  Minus, 
-  Plus, 
-  Trash2, 
+import {
+  ShoppingBag,
+  Heart,
+  Search,
+  Menu,
+  X,
+  Minus,
+  Plus,
+  Trash2,
   ArrowRight,
   Sparkles,
   ChevronDown
@@ -33,6 +33,7 @@ export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [currentHash, setCurrentHash] = useState("");
   const pathname = usePathname();
   const router = useRouter();
 
@@ -45,7 +46,20 @@ export const Header: React.FC = () => {
   useEffect(() => {
     setIsCartOpen(false);
     setIsMenuOpen(false);
+    if (typeof window !== "undefined") {
+      setCurrentHash(window.location.hash);
+    }
   }, [pathname]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleHashChange = () => {
+        setCurrentHash(window.location.hash);
+      };
+      window.addEventListener("hashchange", handleHashChange);
+      return () => window.removeEventListener("hashchange", handleHashChange);
+    }
+  }, []);
 
   // Lock body scroll when drawers are open
   useEffect(() => {
@@ -59,19 +73,26 @@ export const Header: React.FC = () => {
   };
 
   const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href.split("#")[0]) && href !== "/";
+    if (href === "/") {
+      return pathname === "/" && (!currentHash || currentHash === "");
+    }
+    const [path, hash] = href.split("#");
+    if (hash) {
+      return pathname === path && currentHash === `#${hash}`;
+    }
+    return pathname.startsWith(path) && path !== "/";
   };
+
+  const showScrolledHeader = isScrolled || pathname !== "/";
 
   return (
     <>
-      <header className={`${styles.header} ${isScrolled ? styles.scrolled : ""}`}>
+      <header className={`${styles.header} ${showScrolledHeader ? styles.scrolled : ""}`}>
 
         {/* ── LOGO ── */}
         <Link href="/" className={styles.logo}>
-          <span className={styles.logoMark}>B</span>
-          <span className={styles.logoText}>IRLA</span>
-          <span className={styles.logoPill}>Nuts</span>
+          <span className={styles.logoMark}>BIR</span>
+          <span className={styles.logoText}>Retail</span>
         </Link>
 
         {/* ── DESKTOP NAV ── */}
@@ -81,6 +102,10 @@ export const Header: React.FC = () => {
               key={link.href}
               href={link.href}
               className={`${styles.navLink} ${isActive(link.href) ? styles.navLinkActive : ""}`}
+              onClick={() => {
+                const [_, hash] = link.href.split("#");
+                setCurrentHash(hash ? `#${hash}` : "");
+              }}
             >
               {link.label}
             </Link>
@@ -271,9 +296,8 @@ export const Header: React.FC = () => {
       >
         <div className={styles.drawerHead}>
           <Link href="/" className={styles.logo} onClick={() => setIsMenuOpen(false)}>
-            <span className={styles.logoMark}>B</span>
-            <span className={styles.logoText}>IRLA</span>
-            <span className={styles.logoPill} style={{ background: "#a81c2e", color: "#fff" }}>Nuts</span>
+            <span className={styles.logoMark}>BIR</span>
+            <span className={styles.logoText}>Retail</span>
           </Link>
           <button className={styles.closeBtn} onClick={() => setIsMenuOpen(false)} aria-label="Close menu">
             <X size={18} />
@@ -286,7 +310,11 @@ export const Header: React.FC = () => {
               key={link.href}
               href={link.href}
               className={`${styles.mobileLink} ${isActive(link.href) ? styles.mobileLinkActive : ""}`}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => {
+                setIsMenuOpen(false);
+                const [_, hash] = link.href.split("#");
+                setCurrentHash(hash ? `#${hash}` : "");
+              }}
               style={{ animationDelay: `${i * 60}ms` }}
             >
               {link.label}
