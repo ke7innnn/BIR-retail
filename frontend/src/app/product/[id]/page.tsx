@@ -297,12 +297,14 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                     className={`${styles.thumbBtn} ${idx === activeImageIdx ? styles.thumbBtnActive : ""}`}
                     onClick={() => setActiveImageIdx(idx)}
                   >
-                    <Image 
-                      src={img} 
-                      alt={`${product.name} detail view ${idx + 1}`}
-                      fill
-                      sizes="80px"
-                    />
+                    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                      <Image 
+                        src={img} 
+                        alt={`${product.name} detail view ${idx + 1}`}
+                        fill
+                        sizes="80px"
+                      />
+                    </div>
                   </button>
                 ))}
               </div>

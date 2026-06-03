@@ -107,6 +107,7 @@
 @media (max-width: 768px) {
   .mainImageContainer {
     height: 380px;
+    flex: none;
   }
 }
 
