@@ -10,6 +10,15 @@ class Settings(BaseSettings):
     MINIO_SECURE: bool = False
     MINIO_EXTERNAL_ENDPOINT: str = "http://localhost:9000"
 
+    # JWT Authentication
+    JWT_SECRET: str = "change-me-to-a-secure-random-secret"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+
+    # Google OAuth
+    GOOGLE_CLIENT_ID: str = ""
+
     model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 settings = Settings()

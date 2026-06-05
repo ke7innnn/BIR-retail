@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.categories import router as categories_router
 from app.api.products import router as products_router
 from app.api.promotions import router as promotions_router
+from app.api.auth import router as auth_router
 from app.database.session import Base, engine
 
 @asynccontextmanager
@@ -28,7 +29,9 @@ app.add_middleware(
 app.include_router(categories_router, prefix="/api")
 app.include_router(products_router, prefix="/api")
 app.include_router(promotions_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
 
 @app.get("/")
 def read_root():
     return {"status": "online", "message": "BIR-retail e-commerce API"}
+
