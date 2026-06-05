@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     # Google OAuth
     GOOGLE_CLIENT_ID: str = ""
 
+    # Cookie Configuration
+    COOKIE_SECURE: bool = False
+    COOKIE_DOMAIN: str | None = None
+
     model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 settings = Settings()

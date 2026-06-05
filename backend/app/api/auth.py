@@ -22,7 +22,8 @@ from app.schema.auth import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 # Cookie configuration constants
-COOKIE_SECURE = False  # Set to True in production (HTTPS)
+COOKIE_SECURE = settings.COOKIE_SECURE
+COOKIE_DOMAIN = settings.COOKIE_DOMAIN
 COOKIE_SAMESITE = "lax"
 COOKIE_HTTPONLY = True
 
@@ -37,6 +38,7 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str)
         samesite=COOKIE_SAMESITE,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
+        domain=COOKIE_DOMAIN,
     )
     response.set_cookie(
         key="refresh_token",
@@ -46,13 +48,14 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str)
         samesite=COOKIE_SAMESITE,
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
         path="/",
+        domain=COOKIE_DOMAIN,
     )
 
 
 def _clear_auth_cookies(response: Response):
     """Clear auth cookies on the response."""
-    response.delete_cookie(key="access_token", path="/")
-    response.delete_cookie(key="refresh_token", path="/")
+    response.delete_cookie(key="access_token", path="/", domain=COOKIE_DOMAIN)
+    response.delete_cookie(key="refresh_token", path="/", domain=COOKIE_DOMAIN)
 
 
 # ---------- Registration ----------
@@ -309,6 +312,7 @@ async def refresh_token(
             samesite=COOKIE_SAMESITE,
             max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             path="/",
+            domain=COOKIE_DOMAIN,
         )
         return AuthResponse(
             message="Token refreshed",
@@ -332,6 +336,7 @@ async def refresh_token(
             samesite=COOKIE_SAMESITE,
             max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             path="/",
+            domain=COOKIE_DOMAIN,
         )
         return AuthResponse(
             message="Token refreshed",
