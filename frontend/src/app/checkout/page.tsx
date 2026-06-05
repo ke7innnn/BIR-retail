@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useShop } from "../../context/ShopContext";
+import { useAuth } from "../../context/AuthContext";
 import styles from "./checkout.module.css";
 import { 
   ShieldCheck, 
@@ -44,6 +45,26 @@ const DELIVERY_METHODS = [
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart, getCartTotal, getCartCount, clearCart } = useShop();
+  const { user, isLoading } = useAuth();
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, isLoading, router]);
+
+  // Prepopulate form if user is logged in
+  useEffect(() => {
+    if (user) {
+      setEmail(user.email || "");
+      if (user.full_name) {
+        const parts = user.full_name.trim().split(/\s+/);
+        setFirstName(parts[0] || "");
+        setLastName(parts.slice(1).join(" ") || "");
+      }
+    }
+  }, [user]);
 
   // Checkout states
   const [activeStep, setActiveStep] = useState(1);
@@ -148,6 +169,32 @@ export default function CheckoutPage() {
     localStorage.removeItem("cliq_luxe_gift_notes");
     router.push("/");
   };
+
+  if (isLoading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh", backgroundColor: "#0f172a" }}>
+        <div className="spinner"></div>
+        <style jsx>{`
+          .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #f59e0b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className={styles.container}>

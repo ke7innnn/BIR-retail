@@ -17,9 +17,15 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="BIR-retail API", version="1.0.0", lifespan=lifespan)
 
 # CORS config to allow local frontend access (typically Next.js on port 3000)
+origins = [
+    "http://localhost:3000",
+    "https://nexonalabs.com",
+    "https://www.nexonalabs.com",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

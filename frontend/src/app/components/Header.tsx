@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useShop } from "../../context/ShopContext";
+import { useAuth } from "../../context/AuthContext";
 import styles from "./Header.module.css";
 import {
   ShoppingBag,
@@ -17,7 +18,8 @@ import {
   Trash2,
   ArrowRight,
   Sparkles,
-  ChevronDown
+  ChevronDown,
+  User
 } from "lucide-react";
 
 const NAV_LINKS = [
@@ -29,6 +31,7 @@ const NAV_LINKS = [
 
 export const Header: React.FC = () => {
   const { cart, wishlist, removeFromCart, updateCartQuantity, getCartTotal, getCartCount } = useShop();
+  const { user, isAuthenticated, logout } = useAuth();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -147,6 +150,35 @@ export const Header: React.FC = () => {
               <span className={styles.badge}>{getCartCount()}</span>
             )}
           </button>
+
+          {/* User Profile / Sign In Dropdown */}
+          {isAuthenticated ? (
+            <div className={styles.profileDropdown}>
+              <button className={styles.profileBtn} aria-label="User profile">
+                {user?.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
+              </button>
+              <div className={styles.profileMenu}>
+                <div className={styles.profileInfo}>
+                  <p className={styles.profileName}>{user?.full_name}</p>
+                  <p className={styles.profileEmail}>{user?.email}</p>
+                </div>
+                <div className={styles.profileLinks}>
+                  {user?.user_type === "admin" && (
+                    <Link href="/admin/dashboard" className={styles.profileLink}>
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <button onClick={logout} className={styles.logoutBtn}>
+                    Log Out
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Link href="/login" className={styles.iconBtn} aria-label="Sign In">
+              <User size={19} />
+            </Link>
+          )}
 
           {/* CTA Button */}
           <Link href="/#collections" className={styles.shopNowBtn}>
@@ -321,16 +353,51 @@ export const Header: React.FC = () => {
               <ArrowRight size={16} />
             </Link>
           ))}
+          {!isAuthenticated && (
+            <Link
+              href="/login"
+              className={styles.mobileLink}
+              onClick={() => setIsMenuOpen(false)}
+              style={{ animationDelay: `${NAV_LINKS.length * 60}ms` }}
+            >
+              Sign In
+              <ArrowRight size={16} />
+            </Link>
+          )}
         </div>
 
         <div className={styles.mobileFoot}>
-          <div className={styles.mobileFootTag}>
-            <Sparkles size={13} />
-            India&apos;s Fastest Growing Dry Fruits Brand
-          </div>
-          <p className={styles.mobileFootText}>
-            Experience the pinnacle of high-end dry fruits, nuts, makhana, and festive gift hampers.
-          </p>
+          {isAuthenticated ? (
+            <div className={styles.mobileProfile}>
+              <div>
+                <p className={styles.mobileProfileName}>{user?.full_name}</p>
+                <p className={styles.mobileProfileEmail}>{user?.email}</p>
+              </div>
+              {user?.user_type === "admin" && (
+                <Link
+                  href="/admin/dashboard"
+                  className={styles.profileLink}
+                  onClick={() => setIsMenuOpen(false)}
+                  style={{ fontSize: "0.9rem", fontWeight: "600", textDecoration: "none" }}
+                >
+                  Admin Dashboard
+                </Link>
+              )}
+              <button onClick={() => { logout(); setIsMenuOpen(false); }} className={styles.logoutBtn}>
+                Log Out
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className={styles.mobileFootTag}>
+                <Sparkles size={13} />
+                India&apos;s Fastest Growing Dry Fruits Brand
+              </div>
+              <p className={styles.mobileFootText}>
+                Experience the pinnacle of high-end dry fruits, nuts, makhana, and festive gift hampers.
+              </p>
+            </>
+          )}
         </div>
       </div>
     </>

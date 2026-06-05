@@ -36,6 +36,7 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str)
         secure=COOKIE_SECURE,
         samesite=COOKIE_SAMESITE,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/",
     )
     response.set_cookie(
         key="refresh_token",
@@ -43,15 +44,15 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str)
         httponly=COOKIE_HTTPONLY,
         secure=COOKIE_SECURE,
         samesite=COOKIE_SAMESITE,
-        path="/api/auth/refresh",
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
+        path="/",
     )
 
 
 def _clear_auth_cookies(response: Response):
     """Clear auth cookies on the response."""
-    response.delete_cookie(key="access_token")
-    response.delete_cookie(key="refresh_token", path="/api/auth/refresh")
+    response.delete_cookie(key="access_token", path="/")
+    response.delete_cookie(key="refresh_token", path="/")
 
 
 # ---------- Registration ----------
@@ -307,6 +308,7 @@ async def refresh_token(
             secure=COOKIE_SECURE,
             samesite=COOKIE_SAMESITE,
             max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            path="/",
         )
         return AuthResponse(
             message="Token refreshed",
@@ -329,6 +331,7 @@ async def refresh_token(
             secure=COOKIE_SECURE,
             samesite=COOKIE_SAMESITE,
             max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            path="/",
         )
         return AuthResponse(
             message="Token refreshed",
