@@ -21,6 +21,7 @@ origins = [
     "http://localhost:3000",
     "https://nexonalabs.com",
     "https://www.nexonalabs.com",
+    "https://bir.nexonalabs.com",
 ]
 
 app.add_middleware(
