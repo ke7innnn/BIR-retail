@@ -5,6 +5,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { GoogleLogin } from "@react-oauth/google";
+import { Sparkles, Check, AlertCircle, ArrowRight } from "lucide-react";
+import styles from "../login/auth.module.css";
 
 export default function RegisterPage() {
   const { register, loginWithGoogle, user, isLoading } = useAuth();
@@ -58,184 +60,152 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      minHeight: "90vh",
-      background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
-      padding: "20px"
-    }}>
-      <div style={{
-        width: "100%",
-        maxWidth: "420px",
-        backgroundColor: "rgba(30, 41, 59, 0.7)",
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        borderRadius: "16px",
-        padding: "40px",
-        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)"
-      }}>
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <h2 style={{ fontSize: "1.85rem", fontWeight: "bold", color: "#ffffff", margin: 0 }}>Create Account</h2>
-          <p style={{ color: "#94a3b8", fontSize: "0.9rem", marginTop: "8px" }}>Sign up for premium dry fruits shopping</p>
+    <div className={styles.page}>
+      {/* ── BRAND PANEL ── */}
+      <aside className={styles.brandPanel}>
+        <div className={styles.brandInner}>
+          <div className={styles.brandLogo}>
+            <span className={styles.brandLogoMark}>
+              <Sparkles size={20} />
+            </span>
+            Birla Nuts
+          </div>
+
+          <span className={styles.brandEyebrow}>
+            <Sparkles size={12} /> Premium Dry Fruits
+          </span>
+          <h1 className={styles.brandTitle}>
+            Join the family of <span>healthier snacking</span>.
+          </h1>
+          <p className={styles.brandDesc}>
+            Create your account to unlock faster checkout, order tracking, and a
+            personal wishlist of India&apos;s finest hand-sorted nuts &amp; dry fruits.
+          </p>
+
+          <ul className={styles.brandList}>
+            <li>
+              <span className={styles.brandCheck}><Check size={15} /></span>
+              FSSAI certified, 100% natural &amp; preservative free
+            </li>
+            <li>
+              <span className={styles.brandCheck}><Check size={15} /></span>
+              Free shipping on orders over ₹499
+            </li>
+            <li>
+              <span className={styles.brandCheck}><Check size={15} /></span>
+              Trusted by 1M+ happy families
+            </li>
+          </ul>
         </div>
+      </aside>
 
-        {error && (
-          <div style={{
-            backgroundColor: "rgba(239, 68, 68, 0.15)",
-            border: "1px solid #ef4444",
-            color: "#f87171",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            fontSize: "0.85rem",
-            marginBottom: "24px"
-          }}>
-            {error}
+      {/* ── FORM PANEL ── */}
+      <main className={styles.formPanel}>
+        <div className={styles.formCard}>
+          <div className={styles.formHeader}>
+            <h2 className={styles.formTitle}>Create account</h2>
+            <p className={styles.formSubtitle}>Sign up for premium dry fruits shopping</p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-          <div>
-            <label htmlFor="fullName" style={{ display: "block", color: "#cbd5e1", fontSize: "0.85rem", fontWeight: "500", marginBottom: "6px" }}>
-              Full Name
-            </label>
-            <input
-              id="fullName"
-              type="text"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="John Doe"
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                borderRadius: "8px",
-                border: "1px solid #475569",
-                backgroundColor: "#0f172a",
-                color: "#ffffff",
-                fontSize: "0.95rem",
-                outline: "none"
-              }}
+          {error && (
+            <div className={styles.error}>
+              <AlertCircle size={16} />
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.field}>
+              <label htmlFor="fullName" className={styles.label}>Full Name</label>
+              <input
+                id="fullName"
+                type="text"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="John Doe"
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="email" className={styles.label}>Email Address</label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="password" className={styles.label}>Password</label>
+              <input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="confirmPassword" className={styles.label}>Confirm Password</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                className={styles.input}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting || isLoading}
+              className={styles.submitBtn}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className={styles.spinner} /> Creating Account...
+                </>
+              ) : (
+                <>
+                  Sign Up <ArrowRight size={17} />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className={styles.divider}>
+            <span>or</span>
+          </div>
+
+          <div className={styles.googleWrap}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError("Google Sign-In failed. Please try again.")}
+              theme="outline"
+              shape="rectangular"
+              width="340"
             />
           </div>
 
-          <div>
-            <label htmlFor="email" style={{ display: "block", color: "#cbd5e1", fontSize: "0.85rem", fontWeight: "500", marginBottom: "6px" }}>
-              Email Address
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                borderRadius: "8px",
-                border: "1px solid #475569",
-                backgroundColor: "#0f172a",
-                color: "#ffffff",
-                fontSize: "0.95rem",
-                outline: "none"
-              }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" style={{ display: "block", color: "#cbd5e1", fontSize: "0.85rem", fontWeight: "500", marginBottom: "6px" }}>
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                borderRadius: "8px",
-                border: "1px solid #475569",
-                backgroundColor: "#0f172a",
-                color: "#ffffff",
-                fontSize: "0.95rem",
-                outline: "none"
-              }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="confirmPassword" style={{ display: "block", color: "#cbd5e1", fontSize: "0.85rem", fontWeight: "500", marginBottom: "6px" }}>
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                borderRadius: "8px",
-                border: "1px solid #475569",
-                backgroundColor: "#0f172a",
-                color: "#ffffff",
-                fontSize: "0.95rem",
-                outline: "none"
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting || isLoading}
-            style={{
-              width: "100%",
-              padding: "12px",
-              borderRadius: "8px",
-              backgroundColor: "#d97706",
-              color: "#ffffff",
-              border: "none",
-              fontSize: "0.95rem",
-              fontWeight: "600",
-              cursor: (isSubmitting || isLoading) ? "not-allowed" : "pointer",
-              transition: "background-color 0.2s",
-              marginTop: "8px"
-            }}
-          >
-            {isSubmitting ? "Creating Account..." : "Sign Up"}
-          </button>
-        </form>
-
-        <div style={{ display: "flex", alignItems: "center", margin: "24px 0", color: "#64748b" }}>
-          <div style={{ flex: 1, height: "1px", backgroundColor: "#334155" }}></div>
-          <span style={{ padding: "0 12px", fontSize: "0.8rem", textTransform: "uppercase" }}>or</span>
-          <div style={{ flex: 1, height: "1px", backgroundColor: "#334155" }}></div>
+          <p className={styles.footerText}>
+            Already have an account?{" "}
+            <Link href="/login" className={styles.footerLink}>
+              Sign in
+            </Link>
+          </p>
         </div>
-
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => setError("Google Sign-In failed. Please try again.")}
-            theme="filled_blue"
-            shape="rectangular"
-            width="340"
-          />
-        </div>
-
-        <p style={{ color: "#94a3b8", fontSize: "0.875rem", textAlign: "center", marginTop: "32px", marginBottom: 0 }}>
-          Already have an account?{" "}
-          <Link href="/login" style={{ color: "#d97706", textDecoration: "none", fontWeight: "600" }}>
-            Sign in
-          </Link>
-        </p>
-      </div>
+      </main>
     </div>
   );
 }

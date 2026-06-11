@@ -25,8 +25,7 @@ import {
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/#collections", label: "Gourmet Nuts" },
-  { href: "/cart", label: "Luxury Cart" },
-  { href: "/checkout", label: "Checkout" },
+  { href: "/cart", label: "Cart" },
 ];
 
 export const Header: React.FC = () => {

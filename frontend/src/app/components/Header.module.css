@@ -839,34 +839,57 @@
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 8px;
-  width: 240px;
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  padding: 16px;
-  display: none;
+  margin-top: 10px;
+  width: 250px;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  display: flex;
   flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  gap: 10px;
+  box-shadow: var(--shadow-lg);
   z-index: 1010;
-  animation: fadeIn 0.2s ease;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px) scale(0.98);
+  transform-origin: top right;
+  pointer-events: none;
+  transition:
+    opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.25s;
+}
+
+/* Invisible bridge — fills the gap between the avatar and the menu so the
+   cursor can travel across it without losing hover. The menu now closes
+   only when the pointer leaves the avatar AND the menu entirely. */
+.profileMenu::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
 }
 
 .profileDropdown:hover .profileMenu {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
 .profileInfo {
-  border-bottom: 1px solid #334155;
-  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border);
+  padding: 4px 6px 12px;
   text-align: left;
 }
 
 .profileName {
   font-weight: 700;
   font-size: 0.95rem;
-  color: #ffffff;
+  color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -875,48 +898,55 @@
 
 .profileEmail {
   font-size: 0.78rem;
-  color: #94a3b8;
+  color: var(--color-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin: 2px 0 0 0;
+  margin: 3px 0 0 0;
 }
 
 .profileLinks {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   text-align: left;
 }
 
 .profileLink {
-  font-size: 0.85rem;
-  color: #cbd5e1;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
   text-decoration: none;
-  padding: 6px 0;
-  transition: color 0.2s;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
 }
 
 .profileLink:hover {
-  color: #f59e0b;
+  background: var(--color-bg-secondary);
+  color: var(--color-accent-crimson);
 }
 
 .logoutBtn {
-  background: #ef4444;
+  background: linear-gradient(135deg, #a81c2e 0%, #c2253a 100%);
   color: #ffffff;
   border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
   width: 100%;
   text-align: center;
+  box-shadow: 0 6px 16px rgba(168, 28, 46, 0.25);
 }
 
 .logoutBtn:hover {
-  background: #dc2626;
+  background: linear-gradient(135deg, #8e1524 0%, #a81c2e 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(168, 28, 46, 0.35);
 }
 
 /* Mobile specific profile drawer styles */
