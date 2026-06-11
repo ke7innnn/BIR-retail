@@ -3,6 +3,15 @@ import { NextResponse, NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
+  // In local dev the frontend (localhost) and the auth cookies (scoped to the
+  // backend's domain, e.g. .nexonalabs.com) live on different domains, so this
+  // server-side middleware can never see them and would wrongly bounce every
+  // protected route to /login. Skip the cookie-based guard in development and
+  // rely on the client-side guards (AuthContext + admin layout) instead.
+  if (process.env.NODE_ENV !== "production") {
+    return NextResponse.next();
+  }
+
   // Identify active auth cookies
   const hasAccessToken = request.cookies.has("access_token");
   const hasRefreshToken = request.cookies.has("refresh_token");
